@@ -1,20 +1,24 @@
-// src/controllers/clienteController.js
+{/* Classe de Controle Para a Rota de Dados dos Clientes */}
 
-import { getClientesByRegiao } from "../models/clienteModel.js"; // 👈 NOVO nome da função
+{/* Import do Método da Classe de Modelo  */}
+import { getClientesByRegiao } from "../models/clienteModel.js"; 
 
+{/* Export do Método de Listagem Ligado Diretamente ao Banco */}
 export const listarClientes = async (req, res) => {
-  // 1. Obtém o ID da Região dos parâmetros de consulta da URL (Ex: /clientes?regiao=1)
-  const { regiao } = req.query;
 
-  // O ID da Região é OBRIGATÓRIO para o filtro
+  {/* Props de Requisição */}
+  const { regiao } = req.query; 
+
   if (!regiao) {
-    return res.status(400).json({
-      message: "ID da Região é obrigatório para listar clientes filtrados.",
+    
+    {/* Props de Resposta Após a Requisição */}
+    return res.status(400).json({ 
+      message: "ID da Região é obrigatório para listar clientes.",
     });
   }
 
+  {/* Chamada do Método da Classe de Modelo */}
   try {
-    // 2. Chama a nova função do Model, passando o ID da Região
     const clientes = await getClientesByRegiao(regiao);
 
     res.json(clientes);
@@ -26,5 +30,3 @@ export const listarClientes = async (req, res) => {
     });
   }
 };
-
-// Se você está usando o modelo anterior, o nome do arquivo continua sendo clienteController.js

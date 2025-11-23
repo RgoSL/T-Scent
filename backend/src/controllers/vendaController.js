@@ -1,5 +1,6 @@
-// src/controllers/vendaController.js
+  {/* */}
 
+  {/* */}
 import { 
   listarNotasComItens, 
   createNotaFiscal,
@@ -8,11 +9,10 @@ import {
   deleteVenda
 } from "../models/vendaModel.js";
 
-// ----------------------------------------------------------------------
-// [READ] GET /vendas/:id
-// ----------------------------------------------------------------------
+  {/* */}
 import { getVendaById } from "../models/vendaModel.js";
 
+  {/* */}
 export const getVenda = async (req, res) => {
   const { id } = req.params;
   try {
@@ -27,10 +27,7 @@ export const getVenda = async (req, res) => {
   }
 };
 
-
-// ----------------------------------------------------------------------
-// [READ] GET /vendas
-// ----------------------------------------------------------------------
+  {/* */}
 export const getNotas = async (req, res) => {
   try {
     const { regiao } = req.query;
@@ -42,9 +39,7 @@ export const getNotas = async (req, res) => {
   }
 };
 
-// ----------------------------------------------------------------------
-// [CREATE] POST /vendas
-// ----------------------------------------------------------------------
+  {/* */}
 export const cadastrarVenda = async (req, res) => {
   try {
     const { vendedorId, clienteId, itens } = req.body;
@@ -52,11 +47,7 @@ export const cadastrarVenda = async (req, res) => {
     if (!vendedorId || !clienteId || !Array.isArray(itens) || itens.length === 0) {
       return res.status(400).json({ message: "Dados incompletos para o cadastro da venda." });
     }
-
-    // 🔹 Cria a nota fiscal (sem Status)
     const notaId = await createNotaFiscal(vendedorId, clienteId);
-
-    // 🔹 Insere os itens vinculados à nota
     await createItensVenda(notaId, itens);
 
     res.status(201).json({ message: "Venda registrada com sucesso.", notaId });
@@ -66,9 +57,7 @@ export const cadastrarVenda = async (req, res) => {
   }
 };
 
-// ----------------------------------------------------------------------
-// [UPDATE] PUT /vendas/:id
-// ----------------------------------------------------------------------
+  {/* */}
 export const atualizarVenda = async (req, res) => {
   const { id } = req.params;
   const { itens } = req.body;
@@ -91,9 +80,7 @@ export const atualizarVenda = async (req, res) => {
   }
 };
 
-// ----------------------------------------------------------------------
-// [DELETE] DELETE /vendas/:id
-// ----------------------------------------------------------------------
+  {/* */}
 export const excluirVenda = async (req, res) => {
   const { id } = req.params;
 

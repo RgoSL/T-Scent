@@ -1,4 +1,9 @@
+{/* */}
+
+{/* */}
 import express from "express";
+
+{/* */}
 import { 
   getNotas, 
   cadastrarVenda, 
@@ -7,8 +12,8 @@ import {
   getVenda
 } from "../controllers/vendaController.js";
 
+{/* */}
 const router = express.Router();
-
 router.get("/", getNotas);
 router.post("/", cadastrarVenda);
 router.put("/:id", atualizarVenda);

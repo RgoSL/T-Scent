@@ -1,12 +1,12 @@
-// src/models/dashboardModel.js
+  {/* */}
 
+    {/* */}
 import pool from "../config/db.js";
 
-// Busca Contagens e Nome da Região
+  {/* */}
 export const getRegiaoMetrics = async (regiaoId) => {
   try {
     const [rows] = await pool.query(
-      // Nota: Se a tabela Regiao tiver poucas colunas, o FROM regiao r LIMIT 1 é suficiente.
       `
             SELECT 
                 (SELECT COUNT(ID_Vendedor) FROM vendedor WHERE ID_Regiao = ?) AS qtnVen,
@@ -25,11 +25,10 @@ export const getRegiaoMetrics = async (regiaoId) => {
   }
 };
 
-// Busca Pontos Estratégicos REAIS
+  {/* */}
 export const getPontosEstrategicos = async (regiaoId) => {
   try {
     const [rows] = await pool.query(
-      // Usa a tabela 'pontos_estrategicos' e a coluna 'Desc_Ponto' (do seu modelo)
       "SELECT Desc_Ponto FROM pontos_estrategicos WHERE ID_Regiao = ?",
       [regiaoId]
     );

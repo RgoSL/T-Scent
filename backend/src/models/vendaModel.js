@@ -1,11 +1,12 @@
+{/* */}
+
+{/* */}
 import pool from "../config/db.js";
+
+{/* */}
 import connection from "../config/db.js";
 
-
-
-// ------------------------------------------------------------------
-// 🔹 READ (Uma venda específica)
-// ------------------------------------------------------------------
+{/* */}
 export const getVendaById = async (id) => {
   const [rows] = await pool.query(
     `
@@ -33,7 +34,7 @@ export const getVendaById = async (id) => {
 
   if (rows.length === 0) return null;
 
-  // Agrupa os produtos
+  {/* */}
   const venda = {
     ID_Venda: rows[0].ID_Venda,
     ID_Cliente: rows[0].ID_Cliente,
@@ -49,14 +50,10 @@ export const getVendaById = async (id) => {
       Subtotal: parseFloat(r.Subtotal),
     })),
   };
-
   return venda;
 };
 
-
-// ------------------------------------------------------------------
-// 🔹 READ: Listar todas as vendas com agregação (corrigido)
-// ------------------------------------------------------------------
+{/* */}
 export const listarNotasComItens = async (idRegiao = null) => {
   let query = `
     SELECT 
@@ -77,17 +74,19 @@ export const listarNotasComItens = async (idRegiao = null) => {
     JOIN produto p ON iv.ID_Produto = p.ID_Produto
   `;
 
+  {/* */}
   const params = [];
   if (idRegiao) {
     query += " WHERE v.ID_Regiao = ?";
     params.push(idRegiao);
   }
-  query += " ORDER BY nf.Data DESC, nf.ID_Nota";
+  query += " ORDER BY nf.Data DESC, nf.ID_Nota"; {/* */}
 
-  const [rows] = await pool.query(query, params);
+  const [rows] = await pool.query(query, params); {/* */}
 
-  const vendasAgrupadas = {};
+  const vendasAgrupadas = {}; {/* */}
 
+  {/* */}
   for (const row of rows) {
     const subtotalNumerico = parseFloat(row.Subtotal) || 0; 
     const precoUnitarioNumerico = parseFloat(row.Preco_Unitario) || 0;
@@ -95,6 +94,7 @@ export const listarNotasComItens = async (idRegiao = null) => {
     if (!vendasAgrupadas[row.ID_Venda]) {
       const dataFormatada = row.Data ? new Date(row.Data).toLocaleDateString('pt-BR') : 'Data Indisponível';
 
+      {/* */}
       vendasAgrupadas[row.ID_Venda] = {
         ID_Venda: row.ID_Venda,
         Data: dataFormatada,
@@ -106,17 +106,17 @@ export const listarNotasComItens = async (idRegiao = null) => {
       };
     }
 
+    {/* */}
     vendasAgrupadas[row.ID_Venda].Produtos.push({
       Nome: row.Produto,
       Quantidade: row.Qtd_Vendida,
       PrecoUnitario: precoUnitarioNumerico, 
       Subtotal: subtotalNumerico
     });
-
     vendasAgrupadas[row.ID_Venda].Total += subtotalNumerico;
   }
 
-  // Retorno final
+{/* */}
   return Object.values(vendasAgrupadas).map(venda => ({
     ID_Venda: venda.ID_Venda,
     Data_Venda: venda.Data,
@@ -132,9 +132,7 @@ export const listarNotasComItens = async (idRegiao = null) => {
   }));
 };
 
-// ------------------------------------------------------------------
-// 🔹 CREATE (Cadastro - Mestre-Detalhe)
-// ------------------------------------------------------------------
+{/* */}
 export const createNotaFiscal = async (vendedorId, clienteId) => {
   const [result] = await pool.query(
     "INSERT INTO nota_fiscal (ID_Vendedor, ID_Cliente, Data) VALUES (?, ?, NOW())",
@@ -143,14 +141,13 @@ export const createNotaFiscal = async (vendedorId, clienteId) => {
   return result.insertId;
 };
 
-// backend/src/models/vendaModel.js
-
+{/* */}
 export const createItensVenda = async (notaId, itens) => {
   const conn = await pool.getConnection();
   try {
     await conn.beginTransaction();
 
-    // 🔹 Mapeia os itens enviados pelo front
+    {/* */}
     const values = itens.map((item) => {
       const idProduto =
         item.id_produto || item.ID_Produto || item.produtoId || item.id;
@@ -162,7 +159,7 @@ export const createItensVenda = async (notaId, itens) => {
       return [notaId, idProduto, qtd];
     });
 
-    // 🔹 Verifica estoque de cada produto antes de vender
+    {/* */}
     for (const [_, idProduto, qtd] of values) {
       const [rows] = await conn.query(
         "SELECT Nome, Qtd_Estoque FROM produto WHERE ID_Produto = ?",
@@ -173,10 +170,10 @@ export const createItensVenda = async (notaId, itens) => {
         throw new Error(`Produto ID ${idProduto} não encontrado.`);
       }
 
+      {/* */}
       const produto = rows[0];
       const estoqueAtual = produto.Qtd_Estoque;
 
-      // 🚫 Bloqueia se não houver estoque suficiente
       if (estoqueAtual <= 0) {
         throw new Error(`O produto "${produto.Nome}" está sem estoque.`);
       }
@@ -188,7 +185,7 @@ export const createItensVenda = async (notaId, itens) => {
       }
     }
 
-    // 🔹 Insere os itens (em lote)
+    {/* */}
     const insertSQL = `
       INSERT INTO itens_venda (ID_Nota, ID_Produto, Qtd_Vendida)
       VALUES ?
@@ -196,7 +193,7 @@ export const createItensVenda = async (notaId, itens) => {
     `;
     await conn.query(insertSQL, [values]);
 
-    // 🔹 Atualiza o estoque de cada produto vendido
+    {/* */}
     for (const [_, idProduto, qtd] of values) {
       await conn.query(
         "UPDATE produto SET Qtd_Estoque = Qtd_Estoque - ? WHERE ID_Produto = ?",
@@ -204,46 +201,33 @@ export const createItensVenda = async (notaId, itens) => {
       );
     }
 
+    {/* */}
     await conn.commit();
     return { sucesso: true, mensagem: "Venda registrada com sucesso!" };
   } catch (err) {
     await conn.rollback();
-    console.error("❌ Erro ao criar itens da venda:", err.message);
-    // 🔹 Retorna erro amigável pro frontend
+    console.error("Erro ao registar venda:", err.message);
     throw new Error(err.message || "Erro ao registrar venda.");
   } finally {
     conn.release();
   }
 };
 
-
-
-
-
-
-// ------------------------------------------------------------------
-// 🔹 UPDATE (Edição - Atualiza data e itens)
-// ------------------------------------------------------------------
+{/* */}
 export const updateVenda = async (notaId, novosItens) => {
-  // Atualiza a data
   await pool.query(
     "UPDATE nota_fiscal SET Data = NOW() WHERE ID_Nota = ?",
     [notaId]
   );
-
-  // Exclui itens antigos
   await pool.query("DELETE FROM itens_venda WHERE ID_Nota = ?", [notaId]);
 
-  // Insere novamente os novos
   if (novosItens && novosItens.length > 0) {
     return createItensVenda(notaId, novosItens);
   }
   return 1;
 };
 
-// ------------------------------------------------------------------
-// 🔹 DELETE (Exclusão completa)
-// ------------------------------------------------------------------
+{/* */}
 export const deleteVenda = async (notaId) => {
   await pool.query("DELETE FROM itens_venda WHERE ID_Nota = ?", [notaId]);
   const [result] = await pool.query("DELETE FROM nota_fiscal WHERE ID_Nota = ?", [notaId]);

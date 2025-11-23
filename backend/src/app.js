@@ -1,32 +1,37 @@
-// src/app.js (Conteúdo corrigido)
+{/* Classe de Criação do Servidor Backend */}
 
-import express from "express";
-import cors from "cors";
-import vendedorRoutes from "./routes/vendedorRoutes.js";
-import authRoutes from "./routes/authRoutes.js"; // 👈 NÃO ESQUEÇA DE IMPORTAR AS ROTAS DE AUTH
-import clienteRoutes from "./routes/clienteRoutes.js";
-import produtoRoutes from "./routes/produtoRoutes.js";
-import dashboardRoutes from "./routes/dashboardRoutes.js";
-import vendaRoutes from "./routes/vendaRoutes.js"
-// src/app.js (Verifique se esta linha existe)
-import veiculoRoutes from "./routes/veiculosRoutes.js";
+import express from "express"; {/* Import do Framework Utilizado Para Configurar o Servidor */}
 
-const app = express();
+import cors from "cors"; {/* Pacote de Dados Para Ligar Backend e Frontend */}
 
-app.use(cors()); // Permite o React acessar o backend
-app.use(express.json()); // Middleware para interpretar JSON
+{/* Import das Funcionalidades do Backend */}
+import vendedorRoutes from "./routes/vendedorRoutes.js"; {/* Import da Feat de Gestão dos Perfis Cadastrados */}
 
-// Rota de Vendedores
+import authRoutes from "./routes/authRoutes.js"; {/* Import da Feat de Autenticação de Perfis */}
+
+import clienteRoutes from "./routes/clienteRoutes.js"; {/* Import da Feat de Gestão dos Dados de Clientes */}
+
+import produtoRoutes from "./routes/produtoRoutes.js"; {/* Import da Feat de Gestão dos Dados de Produtos */}
+
+import dashboardRoutes from "./routes/dashboardRoutes.js"; {/* Import da Feat que Exibe as Informações no Dashboard */}
+
+import vendaRoutes from "./routes/vendaRoutes.js"; {/* Import da Feat de Controle das Vendas Geradas */}
+
+import veiculoRoutes from "./routes/veiculosRoutes.js"; {/*Import da Feat de Controle dos Dados da Frota da Perfumaria */}
+
+{/* Instânciando o Servidor */}
+const app = express(); 
+
+app.use(cors()); {/* Cria um Middleware Para Permitir que o Servidor Aceite Requisições */}
+app.use(express.json()); 
+
+{/* Definindo o que Cada Rota vai Requisitar */}
 app.use("/vendedores", vendedorRoutes);
-
 app.use("/veiculo", veiculoRoutes);
-// Rota de Autenticação (CRUCIAL para o seu login POST /auth/login)
 app.use("/auth", authRoutes);
-app.use("/clientes", clienteRoutes); // Isso define o prefixo /clientes
-app.use("/produtos", produtoRoutes); // Isso define o prefixo /produtos
+app.use("/clientes", clienteRoutes); 
+app.use("/produtos", produtoRoutes); 
 app.use("/dashboard", dashboardRoutes);
 app.use("/vendas", vendaRoutes);
 
-
-// 👈 Exporta o objeto 'app' para que server.js possa usá-lo
 export default app;
